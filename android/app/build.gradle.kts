@@ -8,9 +8,7 @@ plugins {
 android {
     namespace = "com.example.freshalert"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-    ndkVersion = "27.0.12077973"
-
+    // Remove NDK version line completely - let Flutter handle it
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
