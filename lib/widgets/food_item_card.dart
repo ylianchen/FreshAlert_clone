@@ -15,34 +15,61 @@ class FoodItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.green.shade50 : Colors.white,
-          border: Border.all(
-            color: isSelected ? Colors.green : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            if (isSelected)
-              const BoxShadow(
-                color: Colors.greenAccent,
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              )
-          ],
-        ),
-        child: ListTile(
-          title: Text(item.foodName),
-          subtitle: Text(
-            'Qty: ${item.quantity} | \$${item.price.toStringAsFixed(2)}\nStorage: ${item.currentStorage}',
-          ),
-          trailing: Icon(
-            isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isSelected ? Colors.green : Colors.grey,
+    return Card(
+      color: isSelected ? Colors.green.shade100 : Colors.white,
+      elevation: isSelected ? 6 : 2,
+      shape: RoundedRectangleBorder(
+        side: isSelected
+            ? const BorderSide(color: Colors.green, width: 2)
+            : BorderSide.none,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title: food name
+              Text(
+                item.foodName,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Item matched category
+              Text(
+                'Item: ${item.item}',
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Purchase date
+              Text(
+                'Purchase Date: ${item.purchaseTime.substring(0, 10)}',
+                style: const TextStyle(fontSize: 14),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Freshness index
+              Text(
+                'Freshness: ${item.freshnessIndex.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 14),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Current storage
+              Text(
+                'Storage: ${item.currentStorage}',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
           ),
         ),
       ),

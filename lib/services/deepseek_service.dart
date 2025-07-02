@@ -1,56 +1,84 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 import '../models/food_item.dart';
 
 class DeepseekService {
-  static const String _apiKey = 'sk-352e33e027014d26bf107ec5b212b0a8';
-  static const String _baseUrl = 'https://api.deepseek.com';
-  static const String _endpoint = '/v1/chat/completions';
+  static const String _apiKey = 'sk-352e33e027014d26bf107ec5b212b0a8'; // Replace with your actual key
+  static const String _endpoint = 'https://api.deepseek.com/v1/chat/completions';
 
-  /// 调用 DeepSeek 接口解析小票 OCR 文本
-  static Future<List<FoodItem>> parseReceipt(String ocrText) async {
+  static Future<List<FoodItem>> parseReceipt(String receiptText) async {
+    const productList = [
+      "Milk", "Eggs", "Bread", "Banana", "Chicken", "Apple", "Lettuce", "Yogurt",
+      "Cheese", "Frozen Pizza", "Pork", "Beef", "Fish", "Carrots", "Strawberries",
+      "Grapes", "Tomatoes", "Cucumber", "Orange", "Butter", "Ice Cream", "Shrimp",
+      "Salmon", "Ham", "Hot Dog", "Tofu", "Spinach", "Mushrooms", "Corn", "Peach",
+      "Pear", "Blueberries", "Cabbage", "Zucchini", "Avocado", "Sausage", "Broccoli",
+      "Green Beans", "Watermelon", "Onion", "Potato", "Garlic", "Rice", "Pasta",
+      "Flour", "Sugar", "Salt", "Cereal", "Olive Oil", "Jam"
+    ];
+
     final prompt = '''
-你是一个智能小票解析器。请分析以下小票文字，识别每项商品，并输出一个 JSON 数组，每项包含字段：
-- food_name
-- purchase_date（UTC ISO 格式）
-- price
-- quantity
-- freshness_index（初始为1.00）
-- deterioration_rate_room
-- deterioration_rate_fridge
-- deterioration_rate_freezer
-- current_storage（初始为"room"）
+You are a helpful assistant. Extract a list of food items from the receipt text below.
 
-小票内容如下：
-$ocrText
+For each item, return:
+- foodName: The name as shown on the receipt.
+- item: Match one item from the list below that best represents the product.
+- price: Price in float.
+- quantity: Integer quantity.
+- purchaseTime: Purchase time in UTC format (e.g. "2025-07-01T10:30Z") based on receipt time and location.
+- deteriorationRateRoom: Estimated freshness drop rate per hour at room temperature (float).
+- deteriorationRateFridge: Estimated freshness drop rate per hour in fridge (float).
+- deteriorationRateFreezer: Estimated freshness drop rate per hour in freezer (float).
+
+Use this item list for matching: ${productList.join(", ")}
+
+Return a JSON array, no explanation.
+
+Receipt:
+$receiptText
 ''';
 
-    final response = await http.post(
-      Uri.parse('$_baseUrl$_endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-      },
-      body: jsonEncode({
-        'model': 'deepseek-chat',
-        'messages': [
-          {'role': 'system', 'content': '你是一个结构化 JSON 输出的助手，严格输出 JSON 数组。'},
-          {'role': 'user', 'content': prompt},
-        ],
-        'temperature': 0.0,
-        'max_tokens': 1000,
-        'response_format': {'type': 'json_object'},
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(_endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          "model": "deepseek-chat",
+          "messages": [
+            {"role": "user", "content": prompt}
+          ],
+          "temperature": 0.4
+        }),
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('DeepSeek API 调用失败: ${response.statusCode} ${response.body}');
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        final raw = result['choices'][0]['message']['content'];
+        final cleaned = raw
+            .replaceAll(RegExp(r'```json'), '')
+            .replaceAll(RegExp(r'```'), '')
+            .trim();
+
+        final List<dynamic> jsonList = jsonDecode(cleaned);
+
+        return jsonList.map((json) {
+          final foodItem = FoodItem.fromJson(json);
+          foodItem.id = const Uuid().v4();
+          foodItem.freshnessIndex = 1.0;
+          foodItem.currentStorage = 'room';
+          return foodItem;
+        }).toList();
+      } else {
+        print('❌ DeepSeek API error: ${response.body}');
+        return [];
+      }
+    } catch (e) {
+      print('❌ Failed to parse receipt: $e');
+      return [];
     }
-
-    final responseData = jsonDecode(response.body);
-    final content = responseData['choices'][0]['message']['content'];
-
-    final List<dynamic> parsedList = jsonDecode(content);
-    return parsedList.map((e) => FoodItem.fromJson(e)).toList();
   }
 }

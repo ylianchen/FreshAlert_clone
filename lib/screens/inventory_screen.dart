@@ -8,7 +8,7 @@ class InventoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final visibleItems = items.where((item) =>
-      (item.foodName.isNotEmpty)
+    (item.foodName.isNotEmpty)
     ).toList();
 
     return Scaffold(
@@ -22,31 +22,31 @@ class InventoryScreen extends StatelessWidget {
         child: visibleItems.isEmpty
             ? const SizedBox.shrink()
             : ListView.builder(
-                itemCount: visibleItems.length,
-                itemBuilder: (context, idx) {
-                  final item = visibleItems[idx];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.foodName,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Text('购买日期: ${item.purchaseDate.toLocal().toString().split(' ')[0]}'),
-
-                      ],
-                    ),
-                  );
-                },
+          itemCount: visibleItems.length,
+          itemBuilder: (context, idx) {
+            final item = visibleItems[idx];
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(12),
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.foodName,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('Purchase Date: ${item.purchaseTime.substring(0, 10)}'),
+
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
