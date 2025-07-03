@@ -53,6 +53,18 @@ dependencies:
   intl: ^0.19.0
   uuid: ^4.3.3
 
+  # Image Handling
+  image_picker: ^1.0.4
+
+  cloud_firestore: ^5.0.0
+
+  firebase_core: ^3.0.0
+
+
+  http: ^1.1.0
+
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,6 +81,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

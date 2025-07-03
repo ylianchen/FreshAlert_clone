@@ -4,8 +4,14 @@ import 'screens/inventory_screen.dart';
 import 'screens/scan_screen.dart';
 import 'screens/finance_screen.dart';
 import 'screens/settings_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const FreshAlertApp());
 }
 
