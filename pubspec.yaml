@@ -1,15 +1,17 @@
 name: freshalert
 description: "A new Flutter project."
+
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: ^3.8.1  
 
 dependencies:
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.8
 
   # Navigation
@@ -36,9 +38,11 @@ dependencies:
   # Image Handling
   image_picker: ^1.0.4
 
+  # Firebase
   cloud_firestore: ^5.0.0
   firebase_core: ^3.0.0
 
+  # HTTP
   http: ^1.1.0
 
 dev_dependencies:
@@ -48,3 +52,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+
